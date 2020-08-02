@@ -4,7 +4,6 @@ import me.ibans.chatmacro.ChatMacro
 import me.ibans.chatmacro.KeyManager
 import me.ibans.chatmacro.util.ChatUtil
 import me.ibans.chatmacro.util.messagePlayer
-import net.minecraft.client.settings.KeyBinding
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommand
 import net.minecraft.command.ICommandSender
@@ -14,7 +13,7 @@ import java.io.File
 
 class MacroCommand : CommandBase(), ICommand {
 
-    private val wrongUsage = "/macro <add, delete, list, saveprofile, loadprofile>"
+    private val wrongUsage = "/macro <add, delete, list, saveprofile, loadprofile, listprofiles>"
 
     override fun getCommandName(): String {
         return "macro"
