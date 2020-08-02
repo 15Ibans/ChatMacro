@@ -34,7 +34,7 @@ class MacroCommand : CommandBase(), ICommand {
             throw WrongUsageException(wrongUsage)
         }
 
-        when (args[0]) {
+        when (args[0].toLowerCase()) {
             "add" -> {
                 if (args.size < 3) throw WrongUsageException("/macro add <keycode> <message>")
                 addMacro(args)
@@ -83,7 +83,7 @@ class MacroCommand : CommandBase(), ICommand {
     }
 
     private fun addMacro(args: Array<String>) {
-        val keycode = Keyboard.getKeyIndex(args[1])
+        val keycode = Keyboard.getKeyIndex(args[1].toUpperCase())
         if (keycode == Keyboard.KEY_NONE) return messagePlayer("&cEnter a valid key (find key name using /keycode).")
         val message = ChatUtil.argsToString(args, 2) ?: return
 

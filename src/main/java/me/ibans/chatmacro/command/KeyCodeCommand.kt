@@ -1,6 +1,5 @@
 package me.ibans.chatmacro.command
 
-import me.ibans.chatmacro.util.ForgeUtils
 import me.ibans.chatmacro.util.messagePlayer
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommand
