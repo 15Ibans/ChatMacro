@@ -1,14 +1,16 @@
 package me.ibans.chatmacro.command
 
+import me.ibans.chatmacro.ChatMacro
 import me.ibans.chatmacro.KeyManager
 import me.ibans.chatmacro.util.ChatUtil
-import me.ibans.chatmacro.util.ForgeUtils
+import me.ibans.chatmacro.util.messagePlayer
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommand
 import net.minecraft.command.ICommandSender
 import net.minecraft.command.WrongUsageException
 import org.lwjgl.input.Keyboard
+import java.io.File
 
 class MacroCommand : CommandBase(), ICommand {
 
@@ -46,20 +48,35 @@ class MacroCommand : CommandBase(), ICommand {
                 if (args.size < 2) throw WrongUsageException("/macro saveprofile <profile name>")
                 val profileName = ChatUtil.argsToString(args, 1) ?: return
                 KeyManager.saveKeybindProfile(profileName, true)
-                ForgeUtils.messagePlayer("&aSaved profile &e$profileName")
+                messagePlayer("&aSaved profile &e$profileName")
             }
             "loadprofile" -> {
                 if (args.size < 2) throw WrongUsageException("/macro loadprofile <profile name>")
                 val profileName = ChatUtil.argsToString(args, 1).plus(".profile")
                 KeyManager.loadKeybindProfile(profileName)
-                ForgeUtils.messagePlayer("&aLoaded profile &e$profileName")
+                messagePlayer("&aLoaded profile &e$profileName")
+            }
+            "listprofiles" -> {
+                val files = File(ChatMacro.saveDirectory ?: throw Exception("Save directory is null"))
+                        .walk()
+                        .filter { it.absolutePath.endsWith(".profile") }
+                        .toList()
+                if (files.isEmpty()) {
+                    return messagePlayer("&cThere are currently no saved macro profiles")
+                } else {
+                    messagePlayer("&aThe following macro profiles are currently saved: ")
+                    files.forEach { 
+                        messagePlayer("- ${it.name.removeSuffix(".profile")}")
+                    }
+                }
             }
             "list" -> {
                 listMacros()
             }
             "clear" -> {
                 KeyManager.keybindings.clear()
-                ForgeUtils.messagePlayer("&aCleared all loaded macros")
+                KeyManager.saveKeybindProfile(custom = false)
+                messagePlayer("&aCleared all loaded macros")
             }
             else -> throw WrongUsageException(wrongUsage)
         }
@@ -68,7 +85,7 @@ class MacroCommand : CommandBase(), ICommand {
 
     private fun addMacro(args: Array<String>) {
         val keycode = Keyboard.getKeyIndex(args[1])
-        if (keycode == Keyboard.KEY_NONE) return ForgeUtils.messagePlayer("&cEnter a valid key (find key name using /keycode).")
+        if (keycode == Keyboard.KEY_NONE) return messagePlayer("&cEnter a valid key (find key name using /keycode).")
         val message = ChatUtil.argsToString(args, 2)
 
         val keybind = KeyBinding(message, keycode, KeyManager.CATEGORY)
@@ -81,9 +98,9 @@ class MacroCommand : CommandBase(), ICommand {
         KeyManager.saveKeybindProfile(custom = false)
 
         if (exists) {
-            ForgeUtils.messagePlayer("&eRemapped keybind &a${Keyboard.getKeyName(keycode)} &eto another message")
+            messagePlayer("&eRemapped keybind &a${Keyboard.getKeyName(keycode)} &eto another message")
         } else {
-            ForgeUtils.messagePlayer("&eAdded keybind using key &a${Keyboard.getKeyName(keycode)}")
+            messagePlayer("&eAdded keybind using key &a${Keyboard.getKeyName(keycode)}")
         }
     }
 
@@ -92,16 +109,16 @@ class MacroCommand : CommandBase(), ICommand {
 
         KeyManager.keybindings.removeAll { it.keyCode == keycode }
 
-        ForgeUtils.messagePlayer("&eRemoved any keybinds using key &a${Keyboard.getKeyName(keycode)}")
+        messagePlayer("&eRemoved any keybinds using key &a${Keyboard.getKeyName(keycode)}")
     }
 
     private fun listMacros() {
         if (KeyManager.keybindings.isEmpty()) {
-            ForgeUtils.messagePlayer("&cYou have no assigned macros")
+            messagePlayer("&cYou have no assigned macros")
         } else {
-            ForgeUtils.messagePlayer("&eThe following keybinds are currently loaded:")
+            messagePlayer("&eThe following keybinds are currently loaded:")
             KeyManager.keybindings.forEach {
-                ForgeUtils.messagePlayer("${Keyboard.getKeyName(it.keyCode)}: &a${it.keyDescription}")
+                messagePlayer("${Keyboard.getKeyName(it.keyCode)}: &a${it.keyDescription}")
             }
 
         }

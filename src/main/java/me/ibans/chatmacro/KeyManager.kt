@@ -2,6 +2,7 @@ package me.ibans.chatmacro
 
 import com.google.gson.Gson
 import me.ibans.chatmacro.util.ForgeUtils
+import me.ibans.chatmacro.util.sendChatMessage
 import net.minecraft.client.settings.KeyBinding
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -18,7 +19,7 @@ object KeyManager {
     fun onKeyInput(ev: TickEvent.ClientTickEvent) {
         keybindings.forEach {
             if (it.isPressed || it.isKeyDown) {
-                ForgeUtils.sendChatMessage(it.keyDescription)
+                sendChatMessage(it.keyDescription)
             }
         }
     }

@@ -1,6 +1,7 @@
 package me.ibans.chatmacro.command
 
 import me.ibans.chatmacro.util.ForgeUtils
+import me.ibans.chatmacro.util.messagePlayer
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommand
 import net.minecraft.command.ICommandSender
@@ -18,7 +19,7 @@ class KeyCodeCommand : CommandBase(), ICommand {
             if (Keyboard.getEventKeyState() && isGettingKeyCode) {
                 isGettingKeyCode = false
                 val key = Keyboard.getEventKey()
-                ForgeUtils.messagePlayer("&eGot key code: &a${Keyboard.getKeyName(key)}")
+                messagePlayer("&eGot key code: &a${Keyboard.getKeyName(key)}")
             }
         }
     }
@@ -36,7 +37,7 @@ class KeyCodeCommand : CommandBase(), ICommand {
     }
 
     override fun processCommand(sender: ICommandSender?, args: Array<out String>?) {
-        ForgeUtils.messagePlayer("&eYou will receive the key code of the next key you press.")
+        messagePlayer("&eYou will receive the key code of the next key you press.")
         isGettingKeyCode = true
     }
 

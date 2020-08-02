@@ -1,11 +1,12 @@
 package me.ibans.chatmacro.util
 
+import me.ibans.chatmacro.util.ForgeUtils.format
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ChatComponentText
 
 object ForgeUtils {
 
-    private val minecraft: Minecraft = Minecraft.getMinecraft()
+    val minecraft: Minecraft = Minecraft.getMinecraft()
     private val pattern = "(&)([0123456789abcdefklmnor])".toPattern()
 
     val String.format: String
@@ -14,12 +15,12 @@ object ForgeUtils {
             return matcher.replaceAll("§$2")
         }
 
-    fun sendChatMessage(message: String) {
-        minecraft.thePlayer.sendChatMessage(message)
-    }
+}
 
-    fun messagePlayer(message: String) {
-        minecraft.thePlayer.addChatMessage(ChatComponentText(message.format))
-    }
+fun sendChatMessage(message: String) {
+    ForgeUtils.minecraft.thePlayer.sendChatMessage(message)
+}
 
+fun messagePlayer(message: String) {
+    ForgeUtils.minecraft.thePlayer.addChatMessage(ChatComponentText(message.format))
 }
