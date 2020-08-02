@@ -3,9 +3,9 @@ package me.ibans.chatmacro
 import com.google.gson.Gson
 import me.ibans.chatmacro.util.ForgeUtils
 import me.ibans.chatmacro.util.sendChatMessage
-import net.minecraft.client.settings.KeyBinding
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.input.Keyboard
 import java.io.File
 
 object KeyManager {
@@ -13,13 +13,13 @@ object KeyManager {
     const val CATEGORY = "chatmacro.macro"
     private const val PROFILE_EXTENSION = ".profile"
 
-    val keybindings = mutableListOf<KeyBinding>()
+    val keybindings = mutableMapOf<Int, String>()
 
     @SubscribeEvent
     fun onKeyInput(ev: TickEvent.ClientTickEvent) {
         keybindings.forEach {
-            if (it.isPressed || it.isKeyDown) {
-                sendChatMessage(it.keyDescription)
+            if (ForgeUtils.minecraft.inGameHasFocus && Keyboard.isKeyDown(it.key)) {
+                sendChatMessage(it.value)
             }
         }
     }
@@ -27,7 +27,7 @@ object KeyManager {
     fun saveKeybindProfile(name: String = "current.cfg", custom: Boolean): Boolean {
         val keys = mutableListOf<StoredKey>()
         keybindings.forEach {
-            keys.add(StoredKey(it.keyCode, it.keyDescription))
+            keys.add(StoredKey(it.key, it.value))
         }
 
         val json = Gson().toJson(keys)
@@ -49,7 +49,7 @@ object KeyManager {
         keybindings.clear()
 
         data.forEach {
-            keybindings.add(KeyBinding(it.message, it.key, CATEGORY))
+            keybindings[it.key] = it.message
         }
     }
 

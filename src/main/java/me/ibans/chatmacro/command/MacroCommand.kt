@@ -86,14 +86,12 @@ class MacroCommand : CommandBase(), ICommand {
     private fun addMacro(args: Array<String>) {
         val keycode = Keyboard.getKeyIndex(args[1])
         if (keycode == Keyboard.KEY_NONE) return messagePlayer("&cEnter a valid key (find key name using /keycode).")
-        val message = ChatUtil.argsToString(args, 2)
+        val message = ChatUtil.argsToString(args, 2) ?: return
 
-        val keybind = KeyBinding(message, keycode, KeyManager.CATEGORY)
+        val exists = KeyManager.keybindings.containsKey(keycode)
 
-        val exists = KeyManager.keybindings.any { it.keyCode == keycode }
-
-        KeyManager.keybindings.removeAll { it.keyCode == keycode }
-        KeyManager.keybindings.add(keybind)
+        KeyManager.keybindings.remove(keycode)
+        KeyManager.keybindings[keycode] = message
 
         KeyManager.saveKeybindProfile(custom = false)
 
@@ -107,7 +105,7 @@ class MacroCommand : CommandBase(), ICommand {
     private fun removeMacro(args: Array<String>) {
         val keycode = Keyboard.getKeyIndex(args[1])
 
-        KeyManager.keybindings.removeAll { it.keyCode == keycode }
+        KeyManager.keybindings.remove(keycode)
 
         messagePlayer("&eRemoved any keybinds using key &a${Keyboard.getKeyName(keycode)}")
     }
@@ -118,7 +116,7 @@ class MacroCommand : CommandBase(), ICommand {
         } else {
             messagePlayer("&eThe following keybinds are currently loaded:")
             KeyManager.keybindings.forEach {
-                messagePlayer("${Keyboard.getKeyName(it.keyCode)}: &a${it.keyDescription}")
+                messagePlayer("${Keyboard.getKeyName(it.key)}: &a${it.value}")
             }
 
         }
