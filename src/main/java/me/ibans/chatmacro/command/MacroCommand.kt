@@ -13,7 +13,7 @@ import java.io.File
 
 class MacroCommand : CommandBase(), ICommand {
 
-    private val wrongUsage = "/macro <add, delete, list, saveprofile, loadprofile, listprofiles>"
+    private val wrongUsage = "/macro <add, delete, clear, list, saveprofile, loadprofile, listprofiles>"
 
     override fun getCommandName(): String {
         return "macro"
