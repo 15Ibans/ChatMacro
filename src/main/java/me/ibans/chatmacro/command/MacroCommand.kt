@@ -1,6 +1,7 @@
 package me.ibans.chatmacro.command
 
 import me.ibans.chatmacro.ChatMacro
+import me.ibans.chatmacro.KeyInfo
 import me.ibans.chatmacro.KeyManager
 import me.ibans.chatmacro.util.ChatUtil
 import me.ibans.chatmacro.util.messagePlayer
@@ -36,7 +37,7 @@ class MacroCommand : CommandBase(), ICommand {
 
         when (args[0].toLowerCase()) {
             "add" -> {
-                if (args.size < 3) throw WrongUsageException("/macro add <keycode> <message>")
+                if (args.size < 4) throw WrongUsageException("/macro add <keycode> <message>")
                 addMacro(args)
             }
             "remove" -> {
@@ -65,7 +66,7 @@ class MacroCommand : CommandBase(), ICommand {
                 } else {
                     messagePlayer("&aThe following macro profiles are currently saved: ")
                     files.forEach { 
-                        messagePlayer("- ${it.name.removeSuffix(".profile")}")
+                        messagePlayer("&e- ${it.name.removeSuffix(".profile")}")
                     }
                 }
             }
@@ -84,13 +85,15 @@ class MacroCommand : CommandBase(), ICommand {
 
     private fun addMacro(args: Array<String>) {
         val keycode = Keyboard.getKeyIndex(args[1].toUpperCase())
+        val isSpammable = args[2].toBoolean()
         if (keycode == Keyboard.KEY_NONE) return messagePlayer("&cEnter a valid key (find key name using /keycode).")
-        val message = ChatUtil.argsToString(args, 2) ?: return
+
+        val message = ChatUtil.argsToString(args, 3) ?: return
 
         val exists = KeyManager.keybindings.containsKey(keycode)
 
         KeyManager.keybindings.remove(keycode)
-        KeyManager.keybindings[keycode] = message
+        KeyManager.keybindings[keycode] = KeyInfo(isSpammable, message)
 
         KeyManager.saveKeybindProfile(custom = false)
 
@@ -102,7 +105,7 @@ class MacroCommand : CommandBase(), ICommand {
     }
 
     private fun removeMacro(args: Array<String>) {
-        val keycode = Keyboard.getKeyIndex(args[1])
+        val keycode = Keyboard.getKeyIndex(args[1].toUpperCase())
 
         KeyManager.keybindings.remove(keycode)
 
@@ -115,7 +118,7 @@ class MacroCommand : CommandBase(), ICommand {
         } else {
             messagePlayer("&eThe following keybinds are currently loaded:")
             KeyManager.keybindings.forEach {
-                messagePlayer("${Keyboard.getKeyName(it.key)}: &a${it.value}")
+                messagePlayer("${Keyboard.getKeyName(it.key)}: &a${it.value.message} &d(Spammable: ${it.value.spammable})")
             }
 
         }
