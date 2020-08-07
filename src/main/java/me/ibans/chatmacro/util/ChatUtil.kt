@@ -26,7 +26,7 @@ class TabCompletion(private val completionInfo: Map<String, () -> List<String>>,
         val argsList = args.toMutableList()
         argsList.remove(argsList.last())
         val string = ChatUtil.argsToString(argsList.toTypedArray(), 0) ?: return emptyList()
-        val completionList = completionInfo[completionInfo.keys.find { it.contains(string) }]?.invoke()?.sorted()?.toTypedArray() ?: emptyArray()
+        val completionList = completionInfo[completionInfo.keys.find { it.removePrefix("$command ") == string }]?.invoke()?.sorted()?.toTypedArray() ?: emptyArray()
         return if (completionList.isEmpty()) emptyList() else CommandBase.getListOfStringsMatchingLastWord(args, *completionList)
     }
 
