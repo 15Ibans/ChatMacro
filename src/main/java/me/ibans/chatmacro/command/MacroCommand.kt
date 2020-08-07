@@ -4,17 +4,39 @@ import me.ibans.chatmacro.ChatMacro
 import me.ibans.chatmacro.KeyInfo
 import me.ibans.chatmacro.KeyManager
 import me.ibans.chatmacro.util.ChatUtil
+import me.ibans.chatmacro.util.TabCompletion
 import me.ibans.chatmacro.util.messagePlayer
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommand
 import net.minecraft.command.ICommandSender
 import net.minecraft.command.WrongUsageException
+import net.minecraft.util.BlockPos
 import org.lwjgl.input.Keyboard
 import java.io.File
 
 class MacroCommand : CommandBase(), ICommand {
 
-    private val wrongUsage = "/macro <add, delete, clear, list, saveprofile, loadprofile, listprofiles>"
+    private val usages = listOf("add", "remove", "saveprofile", "loadprofile", "listprofiles", "list", "clear")
+    private val wrongUsage = "/macro <${usages.joinToString(", ")}>"
+
+    private val loadedMacros: () -> List<String> = {
+        KeyManager.keybindings.keys.map { Keyboard.getKeyName(it) }.toList()
+    }
+
+    private val savedProfiles: () -> List<String> = {
+        File(ChatMacro.saveDirectory ?: throw Exception("Save directory is null"))
+                .walk()
+                .filter { it.absolutePath.endsWith(".profile") }
+                .map { it.name }
+                .map { it.removeSuffix(".profile") }
+                .toList()
+    }
+
+    private val tabCompletions = TabCompletion(mapOf(
+            "macro" to { usages },
+            "macro remove" to loadedMacros,
+            "macro loadprofile" to savedProfiles
+    ), "macro")
 
     override fun getCommandName(): String {
         return "macro"
@@ -26,6 +48,10 @@ class MacroCommand : CommandBase(), ICommand {
 
     override fun getCommandUsage(sender: ICommandSender?): String? {
         return null
+    }
+
+    override fun addTabCompletionOptions(sender: ICommandSender?, args: Array<String>, pos: BlockPos?): List<String>? {
+        return tabCompletions.getTabCompletion(args)
     }
 
     override fun processCommand(sender: ICommandSender?, args: Array<String>) {
@@ -54,19 +80,16 @@ class MacroCommand : CommandBase(), ICommand {
                 if (args.size < 2) throw WrongUsageException("/macro loadprofile <profile name>")
                 val profileName = ChatUtil.argsToString(args, 1).plus(".profile")
                 KeyManager.loadKeybindProfile(profileName)
-                messagePlayer("&aLoaded profile &e$profileName")
+                messagePlayer("&aLoaded profile &e${profileName.removeSuffix(".profile")}")
             }
             "listprofiles" -> {
-                val files = File(ChatMacro.saveDirectory ?: throw Exception("Save directory is null"))
-                        .walk()
-                        .filter { it.absolutePath.endsWith(".profile") }
-                        .toList()
+                val files = savedProfiles.invoke()
                 if (files.isEmpty()) {
                     return messagePlayer("&cThere are currently no saved macro profiles")
                 } else {
                     messagePlayer("&aThe following macro profiles are currently saved: ")
                     files.forEach { 
-                        messagePlayer("&e- ${it.name.removeSuffix(".profile")}")
+                        messagePlayer("&e- $it")
                     }
                 }
             }

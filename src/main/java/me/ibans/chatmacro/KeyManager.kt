@@ -58,6 +58,8 @@ object KeyManager {
         data.forEach {
             keybindings[it.key] = KeyInfo(it.spammable, it.message)
         }
+
+        saveKeybindProfile(custom = false)
     }
 
 }
