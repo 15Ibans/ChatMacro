@@ -15,8 +15,16 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'java'
+}
+
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'kotlin'
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 /*
 // for people who want stable - not yet functional for MC 1.8.8 - we require the forgegradle 2.1 snapshot
@@ -99,3 +107,16 @@ compileTestKotlin {
         jvmTarget = "1.8"
     }
 }
+
+shadowJar {
+    relocate 'org.jetbrains','me.ibans.org.jetbrains.kotlin'
+    relocate 'kotlin', 'me.ibans.kotlin'
+
+    classifier '' // Replace the default JAR
+}
+
+reobf {
+    shadowJar {}
+}
+
+build.dependsOn shadowJar
