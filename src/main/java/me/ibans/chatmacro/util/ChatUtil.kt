@@ -42,8 +42,8 @@ class TabCompletion(private val completionInfo: Map<String, () -> List<String>>)
     private fun processWildcard(args: List<String>): String? {
         completionInfo.keys.map { it.split(" ") }
                 .filter { it.size == args.size && it.contains("*")}
-                .forEach {
-                    it.forEachIndexed list@{ i, s ->
+                .forEach list@{
+                    it.forEachIndexed { i, s ->
                         if (s != args[i] && s != "*") return@list
                         if ((s == args[i] || s == "*") && i == args.size - 1) {
                             return ChatUtil.argsToString(it, 0)
