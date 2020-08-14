@@ -14,6 +14,15 @@ object ChatUtil {
         return string
     }
 
+    fun argsToString(args: List<String>, startPos: Int): String? {
+        var string = ""
+        for (i in startPos until args.size) {
+            string += args[i] + " "
+        }
+        string = string.trim { it <= ' ' }
+        return string
+    }
+
 }
 
 class TabCompletion(private val completionInfo: Map<String, () -> List<String>>, val command: String)  {
@@ -26,8 +35,23 @@ class TabCompletion(private val completionInfo: Map<String, () -> List<String>>,
         val argsList = args.toMutableList()
         argsList.remove(argsList.last())
         val string = ChatUtil.argsToString(argsList.toTypedArray(), 0) ?: return emptyList()
-        val completionList = completionInfo[completionInfo.keys.find { it.removePrefix("$command ") == string }]?.invoke()?.sorted()?.toTypedArray() ?: emptyArray()
+        val completionList = completionInfo[completionInfo.keys.find { it.removePrefix("$command ") == string || it == processWildcard(argsList)}]?.invoke()?.sorted()?.toTypedArray() ?: emptyArray()
         return if (completionList.isEmpty()) emptyList() else CommandBase.getListOfStringsMatchingLastWord(args, *completionList)
     }
 
+    fun processWildcard(args: List<String>): String? {
+        println(args)
+        completionInfo.keys.map { it.removePrefix("$command ").split(" ") }
+                .filter { it.size == args.size && it.contains("*")}
+                .forEach {
+                    it.forEachIndexed list@{ i, s ->
+                        if (s != args[i] && s != "*") return@list
+                        if ((s == args[i] || s == "*") && i == args.size - 1) {
+                            val appended = listOf(command) + it
+                            return ChatUtil.argsToString(appended, 0)
+                        }
+                    }
+                }
+        return null
+    }
 }
