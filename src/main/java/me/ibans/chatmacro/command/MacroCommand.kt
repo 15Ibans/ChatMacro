@@ -33,11 +33,11 @@ class MacroCommand : CommandBase(), ICommand {
     }
 
     private val tabCompletions = TabCompletion(mapOf(
-            "macro" to { usages },
-            "macro remove" to loadedMacros,
-            "macro loadprofile" to savedProfiles,
-            "macro add *" to { listOf("true", "false") }
-    ), "macro")
+            "@" to { usages },
+            "remove" to loadedMacros,
+            "loadprofile" to savedProfiles,
+            "add *" to { listOf("true", "false") }
+    ))
 
     override fun getCommandName(): String {
         return "macro"
