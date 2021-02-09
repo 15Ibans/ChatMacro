@@ -132,6 +132,7 @@ class MacroCommand : CommandBase(), ICommand {
         val keycode = Keyboard.getKeyIndex(args[1].toUpperCase())
 
         KeyManager.keybindings.remove(keycode)
+        KeyManager.saveKeybindProfile(custom = false)
 
         messagePlayer("&eRemoved any keybinds using key &a${Keyboard.getKeyName(keycode)}")
     }

@@ -1,5 +1,6 @@
 package me.ibans.chatmacro.util
 
+import me.ibans.chatmacro.ChatVariableManager
 import me.ibans.chatmacro.util.ForgeUtils.format
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ChatComponentText
@@ -18,7 +19,16 @@ object ForgeUtils {
 }
 
 fun sendChatMessage(message: String) {
-    ForgeUtils.minecraft.thePlayer.sendChatMessage(message)
+    var toSend = message
+
+    ChatVariableManager.builtInVars.forEach {
+        toSend = toSend.replace(it.key, it.value.invoke() ?: "")
+    }
+    ChatVariableManager.assignableVars.forEach {
+        toSend = toSend.replace("{${it.key}}", it.value)
+    }
+    
+    ForgeUtils.minecraft.thePlayer.sendChatMessage(toSend)
 }
 
 fun messagePlayer(message: String) {

@@ -1,5 +1,6 @@
 package me.ibans.chatmacro
 
+import me.ibans.chatmacro.command.ChatVarCommand
 import me.ibans.chatmacro.command.KeyCodeCommand
 import me.ibans.chatmacro.command.MacroCommand
 import me.ibans.chatmacro.util.FileUtils
@@ -22,18 +23,20 @@ class ChatMacro {
 
     @Mod.EventHandler
     fun preInit(ev: FMLPreInitializationEvent) {
-        saveDirectory = ev.modConfigurationDirectory.absolutePath + "\\$MODID\\"
+        saveDirectory = ev.modConfigurationDirectory.absolutePath + "/$MODID/"
         FileUtils.createFolderIfNotExists(File(saveDirectory ?: throw Exception("Save directory is null")))
 
         if (File(saveDirectory + "current.cfg").exists()) {
             KeyManager.loadKeybindProfile("current.cfg")
         }
+        ChatVariableManager.loadChatVariables()
     }
 
     @Mod.EventHandler
     fun init(event: FMLInitializationEvent) {
         ClientCommandHandler.instance.registerCommand(MacroCommand())
         ClientCommandHandler.instance.registerCommand(KeyCodeCommand())
+        ClientCommandHandler.instance.registerCommand(ChatVarCommand())
 
         MinecraftForge.EVENT_BUS.register(KeyManager)
         MinecraftForge.EVENT_BUS.register(KeyCodeCommand.Companion)

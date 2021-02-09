@@ -1,7 +1,6 @@
 package me.ibans.chatmacro.util
 
 import net.minecraft.command.CommandBase
-import kotlin.reflect.KFunction
 
 object ChatUtil {
 
