@@ -1,16 +1,21 @@
 package me.ibans.chatmacro.command
 
 import me.ibans.chatmacro.ChatMacro
+import me.ibans.chatmacro.ChatVariableManager
 import me.ibans.chatmacro.KeyInfo
 import me.ibans.chatmacro.KeyManager
 import me.ibans.chatmacro.util.ChatUtil
+import me.ibans.chatmacro.util.ForgeUtils.format
 import me.ibans.chatmacro.util.TabCompletion
 import me.ibans.chatmacro.util.messagePlayer
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommand
 import net.minecraft.command.ICommandSender
 import net.minecraft.command.WrongUsageException
+import net.minecraft.event.HoverEvent
 import net.minecraft.util.BlockPos
+import net.minecraft.util.ChatComponentText
+import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.input.Keyboard
 import java.io.File
 
@@ -64,7 +69,7 @@ class MacroCommand : CommandBase(), ICommand {
 
         when (args[0].toLowerCase()) {
             "add" -> {
-                if (args.size < 4) throw WrongUsageException("/macro add <keycode> <message>")
+                if (args.size < 4) throw WrongUsageException("/macro add <keycode> <isSpammable> <message>")
                 addMacro(args)
             }
             "remove" -> {
@@ -148,6 +153,28 @@ class MacroCommand : CommandBase(), ICommand {
 
         }
     }
+
+//    private fun parseChatVars(input: String): ChatComponentText {
+//        if (ChatVariableManager.assignableVars.isEmpty()) return ChatComponentText(input)
+//        val chatVars = ChatVariableManager.assignableVars
+//        chatVars.forEach {
+//            if (component.formattedText?.contains("{$it}") == true) {
+//                var temp = input
+//                while (temp.indexOf(it.key) != -1) {
+//
+//                }
+//                val withBrackets = "{$it}"
+//                val hoverText = ChatComponentText(withBrackets).apply {
+//                    chatStyle.color = EnumChatFormatting.GOLD
+//                    chatStyle.chatHoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText(it.value))
+//                }
+//                val formattedText = component.formattedText
+//                val first = formattedText.substring(formattedText.indexOf(withBrackets))
+//                val last = component.siblings
+//            }
+//        }
+//        return text
+//    }
 
 
 }

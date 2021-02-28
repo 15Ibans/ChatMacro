@@ -4,6 +4,7 @@ import me.ibans.chatmacro.ChatVariableManager
 import me.ibans.chatmacro.util.ForgeUtils.format
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ChatComponentText
+import net.minecraft.util.IChatComponent
 
 object ForgeUtils {
 
@@ -33,4 +34,8 @@ fun sendChatMessage(message: String) {
 
 fun messagePlayer(message: String) {
     ForgeUtils.minecraft.thePlayer.addChatMessage(ChatComponentText(message.format))
+}
+
+fun messagePlayer(chatComponent: IChatComponent) {
+    ForgeUtils.minecraft.thePlayer.addChatComponentMessage(chatComponent)
 }
