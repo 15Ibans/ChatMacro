@@ -45,11 +45,11 @@ class ChatVarCommand : CommandBase(), ICommand {
 
         when (args[0].toLowerCase()) {
             "assign" -> {
-                if (args.size < 3) throw WrongUsageException(wrongUsage)
+                if (args.size < 3) throw WrongUsageException("/chatvar assign <variableName> <text>")
                 addChatVariable(args)
             }
             "remove" -> {
-                if (args.size < 2) throw WrongUsageException(wrongUsage)
+                if (args.size < 2) throw WrongUsageException("/chatvar remove <variableName>")
                 removeChatVariable(args)
             }
             "list" -> {
@@ -58,9 +58,8 @@ class ChatVarCommand : CommandBase(), ICommand {
                     return messagePlayer("&eThere are currently no registered chat variables")
                 }
                 messagePlayer("&eThe following chat variables are currently registered:")
-                messagePlayer(" ")
                 assignedVars.forEach { (name, value) ->
-                    messagePlayer("&e$name &a-> &e$value")
+                    messagePlayer("&a$name &9-> &a$value")
                 }
             }
         }
