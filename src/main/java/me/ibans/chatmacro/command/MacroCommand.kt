@@ -5,17 +5,13 @@ import me.ibans.chatmacro.ChatVariableManager
 import me.ibans.chatmacro.KeyInfo
 import me.ibans.chatmacro.KeyManager
 import me.ibans.chatmacro.util.ChatUtil
-import me.ibans.chatmacro.util.ForgeUtils.format
 import me.ibans.chatmacro.util.TabCompletion
 import me.ibans.chatmacro.util.messagePlayer
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommand
 import net.minecraft.command.ICommandSender
 import net.minecraft.command.WrongUsageException
-import net.minecraft.event.HoverEvent
 import net.minecraft.util.BlockPos
-import net.minecraft.util.ChatComponentText
-import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.input.Keyboard
 import java.io.File
 
@@ -147,34 +143,49 @@ class MacroCommand : CommandBase(), ICommand {
             messagePlayer("&cYou have no assigned macros")
         } else {
             messagePlayer("&eThe following keybinds are currently loaded:")
-            KeyManager.keybindings.forEach {
-                messagePlayer("${Keyboard.getKeyName(it.key)}: &a${it.value.message} &d(Spammable: ${it.value.spammable})")
+            for ((key, value) in KeyManager.keybindings) {
+                val split = value.message.splitBraces()
+                println(split)
+                messagePlayer {
+                    val keyName = Keyboard.getKeyName(key)
+                    +"$keyName: " hoverMessage "Click to edit &e$keyName" suggestCommand "/macro add $keyName ${value.spammable} ${value.message}"
+                    split.forEach part@{ part ->
+                        val stripped = part.removeSurrounding("{", "}")
+                        if (ChatVariableManager.assignableVars.keys.contains(stripped)) {
+                            val sub = ChatVariableManager.assignableVars[stripped] ?: return@part
+                            +"&6$part" hoverMessage sub
+                        } else {
+                            +"&a$part"
+                        }
+                    }
+                    +" &d(Spammable: ${value.spammable})"
+                }
             }
-
         }
     }
 
-//    private fun parseChatVars(input: String): ChatComponentText {
-//        if (ChatVariableManager.assignableVars.isEmpty()) return ChatComponentText(input)
-//        val chatVars = ChatVariableManager.assignableVars
-//        chatVars.forEach {
-//            if (component.formattedText?.contains("{$it}") == true) {
-//                var temp = input
-//                while (temp.indexOf(it.key) != -1) {
-//
-//                }
-//                val withBrackets = "{$it}"
-//                val hoverText = ChatComponentText(withBrackets).apply {
-//                    chatStyle.color = EnumChatFormatting.GOLD
-//                    chatStyle.chatHoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText(it.value))
-//                }
-//                val formattedText = component.formattedText
-//                val first = formattedText.substring(formattedText.indexOf(withBrackets))
-//                val last = component.siblings
-//            }
-//        }
-//        return text
-//    }
+    private fun String.splitBraces(): List<String> {
+        var str = this
+        val list = mutableListOf<String>()
+        var leftPos = indexOf("{")
+        var rightPos = indexOf("}", leftPos)
 
+        while (leftPos != -1 && rightPos != -1 && rightPos > leftPos) {
+            list.add(str.substring(0, leftPos))
+            list.add(str.substring(leftPos, rightPos + 1))
+            str = str.substring(rightPos + 1)
+            leftPos = str.indexOf("{")
+            rightPos = str.indexOf("}")
+        }
+
+        list.add(str)
+
+        if (list.isEmpty()) {
+            list.add(this)
+        }
+
+        return list
+    }
 
 }
+
