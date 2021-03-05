@@ -145,7 +145,6 @@ class MacroCommand : CommandBase(), ICommand {
             messagePlayer("&eThe following keybinds are currently loaded:")
             for ((key, value) in KeyManager.keybindings) {
                 val split = value.message.splitBraces()
-                println(split)
                 messagePlayer {
                     val keyName = Keyboard.getKeyName(key)
                     +"$keyName: " hoverMessage "Click to edit &e$keyName" suggestCommand "/macro add $keyName ${value.spammable} ${value.message}"
