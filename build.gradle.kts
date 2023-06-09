@@ -68,7 +68,7 @@ dependencies {
     forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
+//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
 
     // If you don't want mixins, remove these lines
 //    shadowImpl("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
